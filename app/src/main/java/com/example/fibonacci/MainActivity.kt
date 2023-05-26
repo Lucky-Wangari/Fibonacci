@@ -1,46 +1,70 @@
-package com.example.fibonacci
+package com.Lucky.rv_fibonacio
 
+import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.fibonacci.ui.theme.FibonacciTheme
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.Lucky.rv_fibonacio.databinding.ActivityMainBinding
+import android.os.Bundle
 
 class MainActivity : ComponentActivity() {
+    lateinit var binding:ActivityMainBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContent {
-            FibonacciTheme {
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    Greeting("Android")
-                }
-            }
+        binding= ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fibonacciNumbersUpTo200()
+
+    }
+    fun fibonacciNumbersUpTo200() {
+        var a = 0
+        var b = 1
+        var c: Int
+
+//        println("Fibonacci numbers up to 200:")
+//        print("$a, $b")
+        var numbers_list= mutableListOf<Int>(a,b)
+        while (true) {
+            c = a + b
+            if (c > 100)
+                break
+
+            numbers_list.add(c)
+
+            a = b
+            b = c
         }
+        binding.rvfibonacio.layoutManager=LinearLayoutManager(this)
+        var numbersAdapter=NumbersRVAdapter(numbers_list)
+        binding.rvfibonacio.adapter=numbersAdapter
     }
+
+
+}
+10:23
+class NumbersRVAdapter(var fiboList: List<Int>):RecyclerView.Adapter<NumbersViewHolder>(){
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NumbersViewHolder {
+        val numView=LayoutInflater.from(parent.context)
+            .inflate(R.layout.recycleviews_fibonac,parent,false)
+        return NumbersViewHolder(numView)
+    }
+
+    override fun onBindViewHolder(holder: NumbersViewHolder, position: Int) {
+//   turned tostring for it to be a string
+        val currentNumber=fiboList.get(position).toString()
+        holder.tvfibo.text=currentNumber
+    }
+
+    override fun getItemCount(): Int {
+        return fiboList.size
+    }
+
+
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    FibonacciTheme {
-        Greeting("Android")
-    }
+class NumbersViewHolder(itemView: View):RecyclerView.ViewHolder(itemView){
+    var tvfibo=itemView.findViewById<TextView>(R.id.tvfibo)
 }
